@@ -6,18 +6,44 @@ The library provides convenient access to the [Outscraper API](https://app.outsc
 
 Java 11 or later
 
-### Gradle users
+### Gradle
 
-Add this dependency to your project's build file:
+Edit your build.gradle file
 ``` sh
-implementation "com.outscraper:outscraper-java:0.0.1"
+repositories {
+    maven { url "https://jitpack.io" }
+}
+
+dependencies {
+    implementation 'com.github.outscraper:outscraper-java:v1.0.4'
+}
+```
+
+### Maven
+
+Add the JitPack repository to your build file
+``` sh
+	<repositories>
+		<repository>
+		    <id>jitpack.io</id>
+		    <url>https://jitpack.io</url>
+		</repository>
+	</repositories>
+```
+
+Add the dependency
+``` sh
+	<dependency>
+	    <groupId>com.github.outscraper</groupId>
+	    <artifactId>outscraper-java</artifactId>
+	    <version>v1.0.4</version>
+	</dependency>
 ```
 
 ### Others
 
 You'll need to manually install the following JARs:
-
-- [The Outscraper JAR](https://search.maven.org/remote_content?g=com.outscraper&a=outscraper-java&v=LATEST)
+- [The Outscraper JAR](https://jitpack.io/com/github/outscraper/outscraper-java/v1.0.4/outscraper-java-v1.0.4.jar)
 - [Json](https://repo1.maven.org/maven2/org/json/json/20090211/json-20090211.jar)
 - [Httpcomponents](https://repo1.maven.org/maven2/org/apache/httpcomponents/httpclient/4.5.13/httpclient-4.5.13.jar)
 - [Guava](https://repo1.maven.org/maven2/com/google/guava/guava/30.1.1-jre/guava-30.1.1-jre.jar)
