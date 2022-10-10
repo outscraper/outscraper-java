@@ -15,7 +15,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.outscraper:outscraper-java:v1.0.4'
+    implementation 'com.github.outscraper:outscraper-java:v2.0.0'
 }
 ```
 
@@ -36,14 +36,14 @@ Add the dependency
 	<dependency>
 	    <groupId>com.github.outscraper</groupId>
 	    <artifactId>outscraper-java</artifactId>
-	    <version>v1.0.4</version>
+	    <version>v2.0.0</version>
 	</dependency>
 ```
 
 ### Others
 
 You'll need to manually install the following JARs:
-- [The Outscraper JAR](https://jitpack.io/com/github/outscraper/outscraper-java/v1.0.4/outscraper-java-v1.0.4.jar)
+- [The Outscraper JAR](https://jitpack.io/com/github/outscraper/outscraper-java/v2.0.0/outscraper-java-v2.0.0.jar)
 - [Json](https://repo1.maven.org/maven2/org/json/json/20090211/json-20090211.jar)
 - [Httpcomponents](https://repo1.maven.org/maven2/org/apache/httpcomponents/httpclient/4.5.13/httpclient-4.5.13.jar)
 - [Guava](https://repo1.maven.org/maven2/com/google/guava/guava/30.1.1-jre/guava-30.1.1-jre.jar)
@@ -58,7 +58,7 @@ OutscraperClient client = new OutscraperClient("SECRET_API_KEY");
 
 ```java
 // Search for SERP results:
-JSONArray results = client.googleSearchV3(new HashMap<String, Object>() {{
+JSONArray results = client.googleSearch(new HashMap<String, Object>() {{
    put("query", "buy iphone 13 TX");
    put("language", "en");
    put("region", "us");

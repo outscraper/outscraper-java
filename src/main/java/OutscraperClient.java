@@ -76,20 +76,12 @@ public class OutscraperClient {
     public JSONArray googleSearch(HashMap<String, Object> parameters) {
         parameters.put("async", false);
 
-        JSONObject response = getAPIRequest("/google-search-v2", parameters);
-
-        return getData(response);
-    }
-
-    public JSONArray googleSearchV3(HashMap<String, Object> parameters) {
-        parameters.put("async", false);
-
         JSONObject response = getAPIRequest("/google-search-v3", parameters);
 
         return getData(response);
     }
 
-    public JSONArray googleMapsSearchV2(HashMap<String, Object> parameters) {
+    public JSONArray googleMapsSearch(HashMap<String, Object> parameters) {
         parameters.put("async", false);
 
         JSONObject response = getAPIRequest("/maps/search-v2", parameters);
@@ -97,7 +89,7 @@ public class OutscraperClient {
         return getData(response);
     }
 
-    public JSONArray googleMapsReviewsV3(HashMap<String, Object> parameters) {
+    public JSONArray googleMapsReviews(HashMap<String, Object> parameters) {
         parameters.put("async", false);
 
         JSONObject response = getAPIRequest("/maps/reviews-v3", parameters);
