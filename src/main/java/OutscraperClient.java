@@ -364,4 +364,20 @@ public class OutscraperClient {
 
         return getData(response);
     }
+
+    public JSONArray similarweb(HashMap<String, Object> parameters) {
+        parameters.put("async", false);
+
+        JSONObject response = getAPIRequest("/similarweb", parameters);
+
+        return getData(response);
+    }
+
+    public JSONArray companyWebsiteFinder(HashMap<String, Object> parameters) {
+        parameters.put("async", false);
+
+        JSONObject response = getAPIRequest("/company-website-finder", parameters);
+
+        return getData(response);
+    }
 }
