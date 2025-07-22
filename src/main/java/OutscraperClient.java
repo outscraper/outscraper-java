@@ -208,67 +208,6 @@ public class OutscraperClient {
         return getData(response);
     }
 
-    public JSONArray youtubeComments(HashMap<String, Object> parameters) {
-        parameters.put("async", false);
-
-        JSONObject response = getAPIRequest("/youtube-comments", parameters);
-
-        return getData(response);
-    }
-
-    public JSONArray youtubeComments(HashMap<String, Object> parameters) {
-        parameters.put("async", false);
-
-        JSONObject response = getAPIRequest("/youtube-comments", parameters);
-
-        return getData(response);
-    }
-    public JSONArray youtubeComments(HashMap<String, Object> parameters) {
-        parameters.put("async", false);
-
-        JSONObject response = getAPIRequest("/youtube-comments", parameters);
-
-        return getData(response);
-    }
-
-    public JSONArray youtubeComments(HashMap<String, Object> parameters) {
-        parameters.put("async", false);
-
-        JSONObject response = getAPIRequest("/youtube-comments", parameters);
-
-        return getData(response);
-    }
-    public JSONArray youtubeComments(HashMap<String, Object> parameters) {
-        parameters.put("async", false);
-
-        JSONObject response = getAPIRequest("/youtube-comments", parameters);
-
-        return getData(response);
-    }
-
-    public JSONArray youtubeComments(HashMap<String, Object> parameters) {
-        parameters.put("async", false);
-
-        JSONObject response = getAPIRequest("/youtube-comments", parameters);
-
-        return getData(response);
-    }
-    public JSONArray youtubeComments(HashMap<String, Object> parameters) {
-        parameters.put("async", false);
-
-        JSONObject response = getAPIRequest("/youtube-comments", parameters);
-
-        return getData(response);
-    }
-
-    public JSONArray youtubeComments(HashMap<String, Object> parameters) {
-        parameters.put("async", false);
-
-        JSONObject response = getAPIRequest("/youtube-comments", parameters);
-
-        return getData(response);
-    }
-
     public JSONArray g2Reviews(HashMap<String, Object> parameters) {
         parameters.put("async", false);
 
@@ -377,6 +316,14 @@ public class OutscraperClient {
         parameters.put("async", false);
 
         JSONObject response = getAPIRequest("/company-website-finder", parameters);
+
+        return getData(response);
+    }
+
+    public JSONArray yellowpagesSearch(HashMap<String, Object> parameters) {
+        parameters.put("async", false);
+
+        JSONObject response = getAPIRequest("/yellowpages-search", parameters);
 
         return getData(response);
     }
