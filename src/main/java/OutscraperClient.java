@@ -428,7 +428,7 @@ public class OutscraperClient {
         return all;
     }
 
-    public JSONObject businessesGetDetails(String businessId, HashMap<String, Object> parameters) {
+    public JSONObject businessesGet(String businessId, HashMap<String, Object> parameters) {
         if (businessId == null || businessId.isBlank()) {
             throw new IllegalArgumentException("businessId is required");
         }
