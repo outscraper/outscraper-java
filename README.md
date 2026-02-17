@@ -52,7 +52,7 @@ You'll need to manually install the following JARs:
 ```java
 OutscraperClient client = new OutscraperClient("SECRET_API_KEY");
 ```
-[Link to the profile page to create the API key](https://app.outscraper.com/profile)
+[Link to the account page to create the API key](https://app.outscraper.com/account/api)
 
 ## Usage
 
