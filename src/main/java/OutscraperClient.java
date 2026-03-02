@@ -8,6 +8,8 @@ import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
+import java.util.Arrays;
+import java.util.Collection;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -363,9 +365,105 @@ public class OutscraperClient {
         return getData(response);
     }
 
+    private Integer toPositiveInt(Object value, String fieldName) {
+        if (value == null || value == JSONObject.NULL) return null;
+
+        int parsed;
+        if (value instanceof Number) {
+            parsed = ((Number) value).intValue();
+        } else {
+            try {
+                parsed = Integer.parseInt(String.valueOf(value).trim());
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException(fieldName + " must be an integer >= 1");
+            }
+        }
+
+        if (parsed < 1) {
+            throw new IllegalArgumentException(fieldName + " must be >= 1");
+        }
+
+        return parsed;
+    }
+
+    private List<String> normalizeEnrichments(Object enrichmentsObj) {
+        List<String> enrichments = new ArrayList<>();
+        if (enrichmentsObj == null || enrichmentsObj == JSONObject.NULL) return enrichments;
+
+        if (enrichmentsObj instanceof String) {
+            String raw = ((String) enrichmentsObj).trim();
+            if (raw.isEmpty()) return enrichments;
+            if (raw.contains(",")) {
+                Arrays.stream(raw.split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .forEach(enrichments::add);
+            } else {
+                enrichments.add(raw);
+            }
+            return enrichments;
+        }
+
+        if (enrichmentsObj instanceof JSONArray) {
+            JSONArray enrichmentsArray = (JSONArray) enrichmentsObj;
+            for (int i = 0; i < enrichmentsArray.length(); i++) {
+                Object value = enrichmentsArray.opt(i);
+                if (value != null && value != JSONObject.NULL) {
+                    String normalized = String.valueOf(value).trim();
+                    if (!normalized.isEmpty()) enrichments.add(normalized);
+                }
+            }
+            return enrichments;
+        }
+
+        if (enrichmentsObj instanceof Collection) {
+            for (Object value : (Collection<?>) enrichmentsObj) {
+                if (value != null) {
+                    String normalized = String.valueOf(value).trim();
+                    if (!normalized.isEmpty()) enrichments.add(normalized);
+                }
+            }
+            return enrichments;
+        }
+
+        if (enrichmentsObj.getClass().isArray()) {
+            Object[] array = (Object[]) enrichmentsObj;
+            for (Object value : array) {
+                if (value != null) {
+                    String normalized = String.valueOf(value).trim();
+                    if (!normalized.isEmpty()) enrichments.add(normalized);
+                }
+            }
+            return enrichments;
+        }
+
+        enrichments.add(String.valueOf(enrichmentsObj).trim());
+        enrichments.removeIf(String::isEmpty);
+        return enrichments;
+    }
+
+    private void normalizeBusinessesEnrichmentParams(HashMap<String, Object> parameters) {
+        List<String> enrichments = normalizeEnrichments(parameters.get("enrichments"));
+        if (!enrichments.isEmpty()) {
+            parameters.put("enrichments", enrichments);
+        }
+
+        Integer contactsPerCompany = toPositiveInt(parameters.get("contacts_per_company"), "contacts_per_company");
+        Integer emailsPerContact = toPositiveInt(parameters.get("emails_per_contact"), "emails_per_contact");
+
+        boolean hasContactsEnrichment = enrichments.contains("contacts_n_leads");
+        if (hasContactsEnrichment) {
+            parameters.put("contacts_per_company", contactsPerCompany != null ? contactsPerCompany : 3);
+            parameters.put("emails_per_contact", emailsPerContact != null ? emailsPerContact : 1);
+        } else if (contactsPerCompany != null || emailsPerContact != null) {
+            throw new IllegalArgumentException("contacts_per_company and emails_per_contact require enrichments to include \"contacts_n_leads\"");
+        }
+    }
+
     public JSONObject businessesSearch(HashMap<String, Object> parameters) {
         if (parameters == null) parameters = new HashMap<>();
         parameters.putIfAbsent("async", false);
+        normalizeBusinessesEnrichmentParams(parameters);
 
         JSONObject response = postAPIRequest("/businesses", parameters);
         if (response == null) return null;
