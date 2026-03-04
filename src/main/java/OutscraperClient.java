@@ -8,8 +8,6 @@ import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
-import java.util.Arrays;
-import java.util.Collection;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -365,105 +363,9 @@ public class OutscraperClient {
         return getData(response);
     }
 
-    private Integer toPositiveInt(Object value, String fieldName) {
-        if (value == null || value == JSONObject.NULL) return null;
-
-        int parsed;
-        if (value instanceof Number) {
-            parsed = ((Number) value).intValue();
-        } else {
-            try {
-                parsed = Integer.parseInt(String.valueOf(value).trim());
-            } catch (NumberFormatException e) {
-                throw new IllegalArgumentException(fieldName + " must be an integer >= 1");
-            }
-        }
-
-        if (parsed < 1) {
-            throw new IllegalArgumentException(fieldName + " must be >= 1");
-        }
-
-        return parsed;
-    }
-
-    private List<String> normalizeEnrichments(Object enrichmentsObj) {
-        List<String> enrichments = new ArrayList<>();
-        if (enrichmentsObj == null || enrichmentsObj == JSONObject.NULL) return enrichments;
-
-        if (enrichmentsObj instanceof String) {
-            String raw = ((String) enrichmentsObj).trim();
-            if (raw.isEmpty()) return enrichments;
-            if (raw.contains(",")) {
-                Arrays.stream(raw.split(","))
-                    .map(String::trim)
-                    .filter(s -> !s.isEmpty())
-                    .forEach(enrichments::add);
-            } else {
-                enrichments.add(raw);
-            }
-            return enrichments;
-        }
-
-        if (enrichmentsObj instanceof JSONArray) {
-            JSONArray enrichmentsArray = (JSONArray) enrichmentsObj;
-            for (int i = 0; i < enrichmentsArray.length(); i++) {
-                Object value = enrichmentsArray.opt(i);
-                if (value != null && value != JSONObject.NULL) {
-                    String normalized = String.valueOf(value).trim();
-                    if (!normalized.isEmpty()) enrichments.add(normalized);
-                }
-            }
-            return enrichments;
-        }
-
-        if (enrichmentsObj instanceof Collection) {
-            for (Object value : (Collection<?>) enrichmentsObj) {
-                if (value != null) {
-                    String normalized = String.valueOf(value).trim();
-                    if (!normalized.isEmpty()) enrichments.add(normalized);
-                }
-            }
-            return enrichments;
-        }
-
-        if (enrichmentsObj.getClass().isArray()) {
-            Object[] array = (Object[]) enrichmentsObj;
-            for (Object value : array) {
-                if (value != null) {
-                    String normalized = String.valueOf(value).trim();
-                    if (!normalized.isEmpty()) enrichments.add(normalized);
-                }
-            }
-            return enrichments;
-        }
-
-        enrichments.add(String.valueOf(enrichmentsObj).trim());
-        enrichments.removeIf(String::isEmpty);
-        return enrichments;
-    }
-
-    private void normalizeBusinessesEnrichmentParams(HashMap<String, Object> parameters) {
-        List<String> enrichments = normalizeEnrichments(parameters.get("enrichments"));
-        if (!enrichments.isEmpty()) {
-            parameters.put("enrichments", enrichments);
-        }
-
-        Integer contactsPerCompany = toPositiveInt(parameters.get("contacts_per_company"), "contacts_per_company");
-        Integer emailsPerContact = toPositiveInt(parameters.get("emails_per_contact"), "emails_per_contact");
-
-        boolean hasContactsEnrichment = enrichments.contains("contacts_n_leads");
-        if (hasContactsEnrichment) {
-            parameters.put("contacts_per_company", contactsPerCompany != null ? contactsPerCompany : 3);
-            parameters.put("emails_per_contact", emailsPerContact != null ? emailsPerContact : 1);
-        } else if (contactsPerCompany != null || emailsPerContact != null) {
-            throw new IllegalArgumentException("contacts_per_company and emails_per_contact require enrichments to include \"contacts_n_leads\"");
-        }
-    }
-
     public JSONObject businessesSearch(HashMap<String, Object> parameters) {
         if (parameters == null) parameters = new HashMap<>();
         parameters.putIfAbsent("async", false);
-        normalizeBusinessesEnrichmentParams(parameters);
 
         JSONObject response = postAPIRequest("/businesses", parameters);
         if (response == null) return null;
@@ -477,6 +379,50 @@ public class OutscraperClient {
         }
         return response;
     }
+
+    /**
+     * Convenience overload for /businesses search with explicit parameters.
+     *
+     * @param filters       Map of filters (will be sent as "filters")
+     * @param limit         Page size
+     * @param includeTotal  Whether to include total count ("include_total")
+     * @param cursor        Pagination cursor
+     * @param fields        Fields to return (List<String> or String or JSONArray)
+     * @param asyncRequest  Whether to run request asynchronously ("async")
+     * @param ui            Whether to enable UI mode ("ui")
+     * @param webhook       Webhook URL (String) or null
+     * @param query         AI plain text query or null
+     * @param enrichments   Enrichments definition: HashMap / JSONObject / List / String / null
+     */
+    public JSONObject businessesSearch(
+            HashMap<String, Object> filters,
+            int limit,
+            boolean includeTotal,
+            String cursor,
+            Object fields,
+            boolean asyncRequest,
+            boolean ui,
+            String webhook,
+            String query,
+            Object enrichments
+    ) {
+        HashMap<String, Object> parameters = new HashMap<>();
+        parameters.put("filters", filters != null ? filters : new HashMap<>());
+        parameters.put("limit", limit);
+        parameters.put("include_total", includeTotal);
+
+        if (cursor != null) parameters.put("cursor", cursor);
+        if (fields != null) parameters.put("fields", fields);
+        if (query != null) parameters.put("query", query);
+        if (enrichments != null) parameters.put("enrichments", enrichments);
+        if (webhook != null) parameters.put("webhook", webhook);
+
+        parameters.put("async", asyncRequest);
+        parameters.put("ui", ui);
+
+        return businessesSearch(parameters);
+    }
+
 
     public JSONArray businessesIterSearch(HashMap<String, Object> parameters) {
         if (parameters == null) parameters = new HashMap<>();
@@ -525,6 +471,37 @@ public class OutscraperClient {
 
         return all;
     }
+
+    /**
+     * Convenience overload for /businesses iterator search (auto-pagination).
+     *
+     * @param filters      Map of filters (will be sent as "filters")
+     * @param limit        Page size
+     * @param fields       Fields to return (List<String> or String or JSONArray)
+     * @param includeTotal Whether to include total count ("include_total")
+     * @param query        AI plain text query or null
+     * @param enrichments  Enrichments definition: HashMap / JSONObject / List / String / null
+     */
+    public JSONArray businessesIterSearch(
+            HashMap<String, Object> filters,
+            int limit,
+            Object fields,
+            boolean includeTotal,
+            String query,
+            Object enrichments
+    ) {
+        HashMap<String, Object> parameters = new HashMap<>();
+        parameters.put("filters", filters != null ? filters : new HashMap<>());
+        parameters.put("limit", limit);
+        parameters.put("include_total", includeTotal);
+
+        if (fields != null) parameters.put("fields", fields);
+        if (query != null) parameters.put("query", query);
+        if (enrichments != null) parameters.put("enrichments", enrichments);
+
+        return businessesIterSearch(parameters);
+    }
+
 
     public JSONObject businessesGet(String businessId, HashMap<String, Object> parameters) {
         if (businessId == null || businessId.isBlank()) {
