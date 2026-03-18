@@ -380,6 +380,50 @@ public class OutscraperClient {
         return response;
     }
 
+    /**
+     * Convenience overload for /businesses search with explicit parameters.
+     *
+     * @param filters       Map of filters (will be sent as "filters")
+     * @param limit         Page size
+     * @param includeTotal  Whether to include total count ("include_total")
+     * @param cursor        Pagination cursor
+     * @param fields        Fields to return (List<String> or String or JSONArray)
+     * @param asyncRequest  Whether to run request asynchronously ("async")
+     * @param ui            Whether to enable UI mode ("ui")
+     * @param webhook       Webhook URL (String) or null
+     * @param query         AI plain text query or null
+     * @param enrichments   Enrichments definition: HashMap / JSONObject / List / String / null
+     */
+    public JSONObject businessesSearch(
+            HashMap<String, Object> filters,
+            int limit,
+            boolean includeTotal,
+            String cursor,
+            Object fields,
+            boolean asyncRequest,
+            boolean ui,
+            String webhook,
+            String query,
+            Object enrichments
+    ) {
+        HashMap<String, Object> parameters = new HashMap<>();
+        parameters.put("filters", filters != null ? filters : new HashMap<>());
+        parameters.put("limit", limit);
+        parameters.put("include_total", includeTotal);
+
+        if (cursor != null) parameters.put("cursor", cursor);
+        if (fields != null) parameters.put("fields", fields);
+        if (query != null) parameters.put("query", query);
+        if (enrichments != null) parameters.put("enrichments", enrichments);
+        if (webhook != null) parameters.put("webhook", webhook);
+
+        parameters.put("async", asyncRequest);
+        parameters.put("ui", ui);
+
+        return businessesSearch(parameters);
+    }
+
+
     public JSONArray businessesIterSearch(HashMap<String, Object> parameters) {
         if (parameters == null) parameters = new HashMap<>();
 
@@ -427,6 +471,37 @@ public class OutscraperClient {
 
         return all;
     }
+
+    /**
+     * Convenience overload for /businesses iterator search (auto-pagination).
+     *
+     * @param filters      Map of filters (will be sent as "filters")
+     * @param limit        Page size
+     * @param fields       Fields to return (List<String> or String or JSONArray)
+     * @param includeTotal Whether to include total count ("include_total")
+     * @param query        AI plain text query or null
+     * @param enrichments  Enrichments definition: HashMap / JSONObject / List / String / null
+     */
+    public JSONArray businessesIterSearch(
+            HashMap<String, Object> filters,
+            int limit,
+            Object fields,
+            boolean includeTotal,
+            String query,
+            Object enrichments
+    ) {
+        HashMap<String, Object> parameters = new HashMap<>();
+        parameters.put("filters", filters != null ? filters : new HashMap<>());
+        parameters.put("limit", limit);
+        parameters.put("include_total", includeTotal);
+
+        if (fields != null) parameters.put("fields", fields);
+        if (query != null) parameters.put("query", query);
+        if (enrichments != null) parameters.put("enrichments", enrichments);
+
+        return businessesIterSearch(parameters);
+    }
+
 
     public JSONObject businessesGet(String businessId, HashMap<String, Object> parameters) {
         if (businessId == null || businessId.isBlank()) {
