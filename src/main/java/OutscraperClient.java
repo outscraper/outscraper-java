@@ -164,12 +164,16 @@ public class OutscraperClient {
         return getData(response);
     }
 
-    public JSONArray contactsAndLeads(HashMap<String, Object> parameters) {
+    public JSONArray leadsAndContacts(HashMap<String, Object> parameters) {
         parameters.put("async", false);
 
         JSONObject response = getAPIRequest("/leads-and-contacts", parameters);
 
         return getData(response);
+    }
+
+    public JSONArray contactsAndLeads(HashMap<String, Object> parameters) {
+        return leadsAndContacts(parameters);
     }
 
     public JSONArray emailsAndContacts(HashMap<String, Object> parameters) {

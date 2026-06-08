@@ -1,6 +1,6 @@
-# Contacts And Leads Scraper With Java
+# Leads And Contacts Scraper With Java
 
-Allows finding email addresses, social links, phones, and other contacts from domains and URLs via the [Contacts & Leads API](https://app.outscraper.com/api-docs#tag/Email-Related/paths/~1leads-and-contacts/get).
+Allows finding email addresses, social links, phones, and other contacts from domains and URLs via the [Leads & Contacts API](https://app.outscraper.com/api-docs#tag/Email-Related/paths/~1leads-and-contacts/get).
 
 ## Installation
 
@@ -57,8 +57,8 @@ OutscraperClient client = new OutscraperClient("SECRET_API_KEY");
 ## Usage
 
 ```java
-# Search contacts and leads from a website:
-JSONArray results = client.contactsAndLeads(new HashMap<String, Object>() {{
+# Search leads and contacts from a website:
+JSONArray results = client.leadsAndContacts(new HashMap<String, Object>() {{
     put("query", "outscraper.com");
 }});
 System.out.println(results);
